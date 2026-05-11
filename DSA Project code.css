@@ -1,0 +1,1599 @@
+< !DOCTYPE html><html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Super Mart — Billing Queue System</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..900,0..100&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"><style> :root {
+    --bg: #f3ede1;
+    --bg-2: #ebe3d2;
+    --ink: #181613;
+    --ink-soft: #4a4438;
+    --paper: #fbf7ee;
+    --accent: #c2410c;
+    /* terracotta */
+    --accent-deep: #9a3412;
+    --green: #14532d;
+    --line: #d8cfb8;
+    --shadow: 0 1px 2px rgba(24, 22, 19, .06), 0 8px 24px -12px rgba(24, 22, 19, .18);
+    --radius: 4px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Manrope', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    background-image:
+        radial-gradient(circle at 1px 1px, rgba(24, 22, 19, .05) 1px, transparent 0);
+    background-size: 24px 24px;
+}
+
+.mono {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.serif {
+    font-family: 'Fraunces', serif;
+}
+
+/* ---------- Top Banner ---------- */
+.topbar {
+    border-bottom: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--bg);
+    padding: 6px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.topbar .marquee {
+    opacity: .7;
+}
+
+/* ---------- Masthead ---------- */
+.masthead {
+    border-bottom: 2px solid var(--ink);
+    padding: 28px 24px 24px;
+    text-align: center;
+    background: var(--bg);
+    position: relative;
+}
+
+.masthead .est {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .3em;
+    color: var(--ink-soft);
+}
+
+.masthead h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-style: italic;
+    font-size: clamp(48px, 9vw, 110px);
+    line-height: .9;
+    margin: 4px 0 6px;
+    letter-spacing: -.02em;
+    font-variation-settings: "SOFT" 50;
+}
+
+.masthead .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .25em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+}
+
+.masthead .rule {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .2em;
+    color: var(--ink-soft);
+}
+
+.masthead .rule::before,
+.masthead .rule::after {
+    content: "";
+    height: 1px;
+    background: var(--ink);
+    flex: 1;
+    max-width: 120px;
+}
+
+/* ---------- Stats strip ---------- */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-bottom: 1px solid var(--ink);
+    background: var(--paper);
+}
+
+.stat {
+    padding: 18px 20px;
+    border-right: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.stat:last-child {
+    border-right: none;
+}
+
+.stat .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+}
+
+.stat .value {
+    font-family: 'Fraunces', serif;
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+
+.stat .value .unit {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--ink-soft);
+    margin-left: 4px;
+}
+
+/* ---------- Layout ---------- */
+.wrap {
+    padding: 32px 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+}
+
+@media (max-width: 980px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.panel {
+    background: var(--paper);
+    border: 1px solid var(--ink);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+}
+
+.panel h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 28px;
+    margin: 0 0 4px;
+    letter-spacing: -.01em;
+}
+
+.panel .sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.panel .sub .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: inline-block;
+}
+
+/* ---------- Catalogue ---------- */
+.catalogue {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 8px;
+    max-height: 360px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.catalogue::-webkit-scrollbar {
+    width: 6px;
+}
+
+.catalogue::-webkit-scrollbar-thumb {
+    background: var(--line);
+    border-radius: 3px;
+}
+
+.item-card {
+    border: 1px solid var(--line);
+    background: var(--bg);
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: transform .12s ease, border-color .12s ease, background .12s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    position: relative;
+}
+
+.item-card:hover {
+    border-color: var(--accent);
+    background: var(--paper);
+    transform: translateY(-1px);
+}
+
+.item-card .code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: .1em;
+    color: var(--ink-soft);
+}
+
+.item-card .name {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.item-card .price {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent-deep);
+    margin-top: auto;
+}
+
+/* ---------- Cart builder ---------- */
+.input-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+input[type="text"] {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--ink);
+    padding: 10px 12px;
+    font-family: 'Manrope', sans-serif;
+    font-size: 14px;
+    border-radius: var(--radius);
+    color: var(--ink);
+}
+
+input:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+}
+
+.btn {
+    background: var(--ink);
+    color: var(--bg);
+    border: 1px solid var(--ink);
+    padding: 10px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: var(--radius);
+    transition: background .12s, color .12s;
+}
+
+.btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+.btn:disabled {
+    opacity: .35;
+    cursor: not-allowed;
+}
+
+.btn.ghost {
+    background: transparent;
+    color: var(--ink);
+}
+
+.btn.ghost:hover {
+    background: var(--ink);
+    color: var(--bg);
+}
+
+.btn.accent {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+}
+
+.btn.accent:hover {
+    background: var(--accent-deep);
+    border-color: var(--accent-deep);
+}
+
+.btn.lg {
+    padding: 14px 28px;
+    font-size: 13px;
+}
+
+.cart {
+    border-top: 1px dashed var(--line);
+    padding-top: 12px;
+    min-height: 80px;
+}
+
+.cart-line {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto auto;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px dotted var(--line);
+    font-size: 13px;
+}
+
+.cart-line:last-child {
+    border-bottom: none;
+}
+
+.cart-line .lname {
+    font-weight: 600;
+}
+
+.cart-line .qty {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+}
+
+.qbtn {
+    width: 22px;
+    height: 22px;
+    border: 1px solid var(--ink);
+    background: var(--bg);
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 1;
+    border-radius: 3px;
+}
+
+.qbtn:hover {
+    background: var(--ink);
+    color: var(--bg);
+}
+
+.cart-line .lprice {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    min-width: 60px;
+    text-align: right;
+}
+
+.cart-empty {
+    color: var(--ink-soft);
+    font-style: italic;
+    font-family: 'Fraunces', serif;
+    text-align: center;
+    padding: 24px 0;
+}
+
+.cart-totals {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 2px solid var(--ink);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+}
+
+.cart-totals .grand {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 600;
+    padding-top: 4px;
+}
+
+/* ---------- THE QUEUE (hero) ---------- */
+.queue-section {
+    margin-top: 32px;
+    background: var(--paper);
+    border: 1px solid var(--ink);
+    border-radius: var(--radius);
+    padding: 28px;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+}
+
+.queue-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.queue-head h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-style: italic;
+    font-size: 44px;
+    margin: 0;
+    line-height: 1;
+    letter-spacing: -.02em;
+}
+
+.queue-head .meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .2em;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+}
+
+.queue-lane {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    overflow-x: auto;
+    padding: 8px 4px 16px;
+    min-height: 200px;
+    position: relative;
+}
+
+.queue-lane::-webkit-scrollbar {
+    height: 8px;
+}
+
+.queue-lane::-webkit-scrollbar-thumb {
+    background: var(--line);
+    border-radius: 4px;
+}
+
+.lane-empty {
+    width: 100%;
+    text-align: center;
+    padding: 48px 0;
+    color: var(--ink-soft);
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 22px;
+}
+
+.qcard {
+    flex: 0 0 220px;
+    background: var(--bg);
+    border: 1px solid var(--ink);
+    padding: 14px;
+    margin-right: 12px;
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+    animation: slideIn .35s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.qcard.front {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent-deep);
+    box-shadow: 0 12px 28px -10px rgba(194, 65, 12, .5);
+    transform: translateY(-4px);
+}
+
+.qcard.front .qprice {
+    color: white;
+}
+
+.qcard.front .qcode {
+    color: rgba(255, 255, 255, .7);
+}
+
+.qcard.front .qitems {
+    color: rgba(255, 255, 255, .85);
+}
+
+.qcard .qcode {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .2em;
+    color: var(--ink-soft);
+}
+
+.qcard .qname {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -.01em;
+}
+
+.qcard .qitems {
+    font-size: 12px;
+    color: var(--ink-soft);
+}
+
+.qcard .qprice {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--accent-deep);
+    margin-top: auto;
+}
+
+.qcard .badge {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: var(--ink);
+    color: var(--bg);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: .15em;
+    padding: 3px 8px;
+    border-radius: 10px;
+}
+
+.qcard.front .badge {
+    background: white;
+    color: var(--accent-deep);
+}
+
+.arrow {
+    flex: 0 0 auto;
+    align-self: center;
+    color: var(--ink-soft);
+    margin: 0 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+}
+
+.queue-controls {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--line);
+    align-items: center;
+}
+
+.queue-controls .legend {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .15em;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    margin-right: auto;
+}
+
+.legend .pill {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background: var(--accent);
+    margin-right: 4px;
+    vertical-align: middle;
+    border-radius: 2px;
+}
+
+/* ---------- Activity log ---------- */
+.activity {
+    margin-top: 32px;
+    background: var(--paper);
+    border: 1px solid var(--ink);
+    border-radius: var(--radius);
+    padding: 20px;
+}
+
+.activity h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    margin: 0 0 12px;
+    font-size: 24px;
+}
+
+.log {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: var(--ink);
+    color: var(--bg);
+    padding: 16px;
+    max-height: 200px;
+    overflow-y: auto;
+    border-radius: var(--radius);
+    line-height: 1.6;
+}
+
+.log .t {
+    color: #888;
+    margin-right: 8px;
+}
+
+.log .op-ENQ {
+    color: #fbbf24;
+}
+
+.log .op-DEQ {
+    color: #34d399;
+}
+
+.log .op-PEEK {
+    color: #93c5fd;
+}
+
+.log .op-INFO {
+    color: #d1d5db;
+}
+
+/* ---------- Modal: Receipt ---------- */
+.modal-bg {
+    position: fixed;
+    inset: 0;
+    background: rgba(24, 22, 19, .7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+}
+
+.modal-bg.show {
+    display: flex;
+    animation: fade .2s;
+}
+
+@keyframes fade {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.receipt {
+    background: white;
+    width: 100%;
+    max-width: 420px;
+    padding: 32px 28px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--ink);
+    box-shadow: 0 30px 80px -20px rgba(0, 0, 0, .5);
+    position: relative;
+    background-image:
+        linear-gradient(transparent 95%, rgba(0, 0, 0, .04) 95%);
+    background-size: 100% 22px;
+}
+
+.receipt::before,
+.receipt::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 14px;
+    background-image: linear-gradient(135deg, transparent 50%, white 50%),
+        linear-gradient(45deg, transparent 50%, white 50%);
+    background-size: 14px 14px;
+    background-repeat: repeat-x;
+}
+
+.receipt::before {
+    top: -14px;
+    transform: rotate(180deg);
+}
+
+.receipt::after {
+    bottom: -14px;
+}
+
+.receipt h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-style: italic;
+    font-size: 32px;
+    text-align: center;
+    margin: 0 0 4px;
+    letter-spacing: -.01em;
+}
+
+.receipt .rsub {
+    text-align: center;
+    font-size: 10px;
+    letter-spacing: .25em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 16px;
+}
+
+.receipt .meta-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+}
+
+.receipt hr {
+    border: none;
+    border-top: 1px dashed var(--ink);
+    margin: 12px 0;
+}
+
+.receipt table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.receipt th {
+    text-align: left;
+    font-weight: 500;
+    color: var(--ink-soft);
+    font-size: 10px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding-bottom: 6px;
+}
+
+.receipt th.r,
+.receipt td.r {
+    text-align: right;
+}
+
+.receipt td {
+    padding: 4px 0;
+    vertical-align: top;
+}
+
+.receipt .totals {
+    margin-top: 8px;
+}
+
+.receipt .totals .row {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 0;
+}
+
+.receipt .totals .grand {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    font-weight: 600;
+    border-top: 2px solid var(--ink);
+    margin-top: 6px;
+    padding-top: 8px;
+}
+
+.receipt .thx {
+    text-align: center;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 16px;
+    margin-top: 16px;
+}
+
+.receipt-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 18px;
+}
+
+/* ---------- DSA explainer ---------- */
+.dsa {
+    margin-top: 32px;
+    background: var(--ink);
+    color: var(--bg);
+    border-radius: var(--radius);
+    padding: 32px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+}
+
+@media (max-width: 780px) {
+    .dsa {
+        grid-template-columns: 1fr;
+    }
+}
+
+.dsa h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-style: italic;
+    font-size: 36px;
+    margin: 0 0 12px;
+}
+
+.dsa p {
+    line-height: 1.6;
+    opacity: .85;
+    font-size: 14px;
+}
+
+.dsa code {
+    background: rgba(255, 255, 255, .1);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+}
+
+.dsa table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+}
+
+.dsa td,
+.dsa th {
+    padding: 6px 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, .15);
+    text-align: left;
+}
+
+.dsa th {
+    color: var(--accent);
+    font-weight: 500;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    font-size: 10px;
+}
+
+.dsa td:last-child {
+    text-align: right;
+    color: #fbbf24;
+}
+
+/* ---------- Footer ---------- */
+footer {
+    margin-top: 48px;
+    padding: 24px;
+    border-top: 1px solid var(--ink);
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+}
+
+/* Toast */
+.toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--ink);
+    color: var(--bg);
+    padding: 12px 22px;
+    border-radius: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    opacity: 0;
+    transition: all .25s ease;
+    z-index: 200;
+    box-shadow: 0 12px 30px -10px rgba(0, 0, 0, .4);
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+@media print {
+    body * {
+        visibility: hidden;
+    }
+
+    .receipt,
+    .receipt * {
+        visibility: visible;
+    }
+
+    .receipt {
+        position: absolute;
+        left: 0;
+        top: 0;
+        box-shadow: none;
+    }
+
+    .receipt-actions {
+        display: none;
+    }
+}
+
+</style></head><body>< !--==========TOP TICKER==========--><div class="topbar"><span>SUPER MART · POS TERMINAL #04</span><span class="marquee" id="clock">— · —</span><span>FIFO QUEUE · GST 5% · ESTD 2026</span></div>< !--==========MASTHEAD==========--><header class="masthead"><div class="est">— EST · MMXXVI —</div><h1>Super Mart</h1><div class="tag">A Billing Queue,
+Beautifully Served</div><div class="rule">Data Structures &amp;
+Algorithms · Mini Project</div></header>< !--==========STATS STRIP==========--><section class="stats"><div class="stat"><span class="label">In Queue</span><span class="value" id="stat-queue">0</span></div><div class="stat"><span class="label">Served Today</span><span class="value" id="stat-served">0</span></div><div class="stat"><span class="label">Revenue</span><span class="value"><span class="unit">₹</span><span id="stat-rev">0</span></span></div><div class="stat"><span class="label">Avg Wait</span><span class="value" id="stat-wait">0<span class="unit">s</span></span></div></section>< !--==========MAIN==========--><main class="wrap">< !-- TWO-COLUMN: Catalogue+Cart --><div class="grid">< !-- Catalogue --><section class="panel"><h2>The Catalogue</h2><div class="sub"><span class="dot"></span>Tap any item to add it to the active cart</div><div class="catalogue" id="catalogue"></div></section>< !-- Cart Builder --><section class="panel"><h2>Active Cart</h2><div class="sub"><span class="dot"></span>Build the customer,
+then enqueue</div><div class="input-row"><input type="text" id="custName" placeholder="Customer name (e.g. Rahul Sharma)" /><button class="btn accent" id="enqueueBtn">+Add to Queue</button></div><div class="cart" id="cart"></div><div class="cart-totals" id="cartTotals" style="display:none;"><span>Subtotal</span><span id="ct-sub">₹0.00</span><span>GST @ 5%</span><span id="ct-tax">₹0.00</span><span class="grand">Total</span><span class="grand" id="ct-tot">₹0.00</span></div></section></div>< !-- THE QUEUE --><section class="queue-section"><div class="queue-head"><div><h2>The Queue</h2><div class="meta" id="queueMeta">Empty · awaiting first customer</div></div><button class="btn accent lg" id="serveBtn" disabled>Serve Next ▸</button></div><div class="queue-lane" id="queueLane"><div class="lane-empty">No one waiting. Add a customer to begin.</div></div><div class="queue-controls"><span class="legend"><span class="pill"></span>Front of queue (next to be served)</span><button class="btn ghost" id="peekBtn">Peek Front</button><button class="btn ghost" id="resetBtn">Reset Session</button></div></section>< !-- ACTIVITY LOG --><section class="activity"><h2>Operations Log</h2><div class="log" id="log"></div></section>< !-- DSA EXPLAINER --><section class="dsa"><div><h2>Why a Queue?</h2><p>A billing counter is a textbook FIFO scenario. The first customer to arrive is the first to be served. New customers join at the rear;
+the cashier serves from the front. This site is a working visualization of the <code>Queue</code>ADT — the very same one implemented in <code>queue_adt.py</code>using a singly linked list with both <code>front</code>and <code>rear</code>pointers for O(1) operations.</p><p>Watch the <strong style="color:var(--accent)">terracotta card</strong>on the left — that's <code>front</code>. Click <code>Serve Next</code> to
+ <code>dequeue()</code>it;
+click <code>+Add to Queue</code>to <code>enqueue()</code>a new one at the right.</p></div><div><h2>Operations</h2><table><tr><th>Operation</th><th>Maps To</th><th>Time</th></tr><tr><td>Customer joins</td><td>enqueue(c)</td><td>O(1)</td></tr><tr><td>Cashier serves</td><td>dequeue()</td><td>O(1)</td></tr><tr><td>Check next</td><td>peek()</td><td>O(1)</td></tr><tr><td>Queue length</td><td>size()</td><td>O(1)</td></tr><tr><td>Display lane</td><td>iterate</td><td>O(n)</td></tr></table></div></section></main><footer>Super Mart · Billing Queue System · Built with vanilla HTML,
+CSS &amp;
+JS </footer>< !-- Receipt Modal --><div class="modal-bg" id="modal"><div class="receipt" id="receipt"></div></div><div class="toast" id="toast"></div><script>
+
+/* =========================================================
+   QUEUE ADT — singly linked list, O(1) enqueue/dequeue/peek
+   Mirrors the Python queue_adt.py exactly.
+   ========================================================= */
+class Queue {
+    constructor() {
+        this._front=null;
+        this._rear=null;
+        this._size=0;
+    }
+
+    enqueue(item) {
+        const node= {
+            data: item, next: null
+        }
+
+        ;
+
+        if ( !this._rear) {
+            this._front=this._rear=node;
+        }
+
+        else {
+            this._rear.next=node;
+            this._rear=node;
+        }
+
+        this._size++;
+    }
+
+    dequeue() {
+        if ( !this._front) throw new Error("dequeue from empty queue");
+        const node=this._front;
+        this._front=node.next;
+        if ( !this._front) this._rear=null;
+        this._size--;
+        return node.data;
+    }
+
+    peek() {
+        if ( !this._front) throw new Error("peek from empty queue");
+        return this._front.data;
+    }
+
+    isEmpty() {
+        return this._size===0;
+    }
+
+    size() {
+        return this._size;
+    }
+
+    toArray() {
+        const arr=[];
+        let n=this._front;
+
+        while (n) {
+            arr.push(n.data);
+            n=n.next;
+        }
+
+        return arr;
+    }
+}
+
+/* ========================================================= */
+/* CATALOGUE (mirrors items.json)                             */
+/* ========================================================= */
+const CATALOGUE=[ {
+    code: "A001", name: "Bread Loaf", price: 45
+}
+
+,
+{
+code: "A002", name: "Milk 1L", price: 62
+}
+
+,
+{
+code: "A003", name: "Eggs (dozen)", price: 84
+}
+
+,
+{
+code: "A004", name: "Butter 100g", price: 58
+}
+
+,
+{
+code: "B001", name: "Basmati Rice 1kg", price: 120
+}
+
+,
+{
+code: "B002", name: "Wheat Flour 1kg", price: 55
+}
+
+,
+{
+code: "B003", name: "Sugar 1kg", price: 48
+}
+
+,
+{
+code: "B004", name: "Salt 1kg", price: 22
+}
+
+,
+{
+code: "C001", name: "Tea Powder 250g", price: 145
+}
+
+,
+{
+code: "C002", name: "Coffee 100g", price: 220
+}
+
+,
+{
+code: "D001", name: "Apples 1kg", price: 180
+}
+
+,
+{
+code: "D002", name: "Bananas 1dz", price: 60
+}
+
+,
+{
+code: "E001", name: "Soap Bar", price: 35
+}
+
+,
+{
+code: "E002", name: "Shampoo 200ml", price: 165
+}
+
+,
+{
+code: "E003", name: "Toothpaste 100g", price: 95
+}
+
+,
+];
+const CATALOGUE_MAP=Object.fromEntries(CATALOGUE.map(i=> [i.code, i]));
+const TAX_RATE=0.05;
+
+/* ========================================================= */
+/* STATE                                                       */
+/* ========================================================= */
+const state= {
+
+    queue: new Queue(),
+    cart: {}
+
+    ,
+    // {code: qty}
+    tokenCounter: 1001,
+    servedCount: 0,
+    revenue: 0,
+    waitTimes: [],
+    // seconds
+    log: [],
+}
+
+;
+
+/* ========================================================= */
+/* DOM HELPERS                                                 */
+/* ========================================================= */
+const $ =id=>document.getElementById(id);
+
+function fmt(n) {
+    return n.toFixed(2);
+}
+
+function inr(n) {
+    return "₹"+n.toFixed(2);
+}
+
+function toast(msg) {
+    const t=$("toast");
+    t.textContent=msg;
+    t.classList.add("show");
+    clearTimeout(toast._t);
+    toast._t=setTimeout(()=> t.classList.remove("show"), 1800);
+}
+
+function logEvent(op, msg) {
+    const ts=new Date().toLocaleTimeString('en-GB');
+
+    state.log.unshift({
+        ts, op, msg
+    });
+if (state.log.length > 80) state.log.pop();
+renderLog();
+}
+
+function renderLog() {
+    const html=state.log.map(e=> `<div><span class="t" >$ {
+            e.ts
+        }
+
+        </span><span class="op-${e.op}" >[$ {
+            e.op
+        }
+
+        ]</span> $ {
+            e.msg
+        }
+
+        </div>`).join("");
+    $("log").innerHTML=html || `<div><span class="t">--:--:--</span><span class="op-INFO">[INFO]</span>System ready. Awaiting input.</div>`;
+}
+
+/* ========================================================= */
+/* CATALOGUE RENDER                                            */
+/* ========================================================= */
+function renderCatalogue() {
+    $("catalogue").innerHTML=CATALOGUE.map(item=> ` <div class="item-card" data-code="${item.code}" > <div class="code" >$ {
+            item.code
+        }
+
+        </div> <div class="name" >$ {
+            item.name
+        }
+
+        </div> <div class="price" >$ {
+            inr(item.price)
+        }
+
+        </div> </div> `).join("");
+
+    $("catalogue").querySelectorAll(".item-card").forEach(el=> {
+            el.addEventListener("click", ()=> addToCart(el.dataset.code));
+        });
+}
+
+/* ========================================================= */
+/* CART                                                        */
+/* ========================================================= */
+function addToCart(code) {
+    state.cart[code]=(state.cart[code] || 0)+1;
+    renderCart();
+
+    toast(`+ $ {
+            CATALOGUE_MAP[code].name
+        }
+
+        `);
+}
+
+function decCart(code) {
+    if ( !state.cart[code]) return;
+    state.cart[code]--;
+    if (state.cart[code] <=0) delete state.cart[code];
+    renderCart();
+}
+
+function delCart(code) {
+    delete state.cart[code];
+    renderCart();
+}
+
+function cartSubtotal() {
+    return Object.entries(state.cart) .reduce((s, [c, q])=> s + CATALOGUE_MAP[c].price * q, 0);
+}
+
+function cartItemCount() {
+    return Object.values(state.cart).reduce((s, q)=> s + q, 0);
+}
+
+function renderCart() {
+    const cart=$("cart");
+    const totals=$("cartTotals");
+    const codes=Object.keys(state.cart);
+
+    if (codes.length===0) {
+        cart.innerHTML=`<div class="cart-empty">Empty cart — start by tapping items on the left.</div>`;
+        totals.style.display="none";
+        return;
+    }
+
+    cart.innerHTML=codes.map(c=> {
+            const item=CATALOGUE_MAP[c];
+            const qty=state.cart[c];
+            const line=item.price * qty;
+
+            return ` <div class="cart-line" > <span class="lname" >$ {
+                item.name
+            }
+
+            </span> <button class="qbtn" onclick="decCart('${c}')" >−</button> <span class="qty" >$ {
+                qty
+            }
+
+            </span> <button class="qbtn" onclick="addToCart('${c}')" >+</button> <span class="lprice" >$ {
+                inr(line)
+            }
+
+            </span> </div> `;
+        }).join("");
+
+    const sub=cartSubtotal();
+    const tax=sub * TAX_RATE;
+    $("ct-sub").textContent=inr(sub);
+    $("ct-tax").textContent=inr(tax);
+    $("ct-tot").textContent=inr(sub + tax);
+    totals.style.display="grid";
+}
+
+/* ========================================================= */
+/* QUEUE OPERATIONS                                            */
+/* ========================================================= */
+function enqueueCustomer() {
+    const name=($("custName").value || "").trim() || "Walk-in Customer";
+
+    if (Object.keys(state.cart).length===0) {
+        toast("Cart is empty");
+        return;
+    }
+
+    const cartCopy=Object.entries(state.cart).map(([c, q])=> ({
+            code: c, name: CATALOGUE_MAP[c].name, price: CATALOGUE_MAP[c].price, qty: q
+        }));
+const subtotal=cartSubtotal();
+
+const customer= {
+    token: state.tokenCounter++,
+        name,
+        cart: cartCopy,
+        items: cartItemCount(),
+        subtotal,
+        tax: subtotal * TAX_RATE,
+        total: subtotal * (1 + TAX_RATE),
+        arrivedAt: Date.now(),
+}
+
+;
+state.queue.enqueue(customer);
+
+logEvent("ENQ", `Token #$ {
+        customer.token
+    }
+
+    — $ {
+        customer.name
+    }
+
+    ($ {
+            customer.items
+        }
+
+        items, $ {
+            inr(customer.total)
+        })`);
+
+// reset cart
+state.cart= {}
+
+;
+$("custName").value="";
+renderCart();
+renderQueue();
+renderStats();
+
+toast(`Token #$ {
+        customer.token
+    }
+
+    added to queue`);
+}
+
+function serveNext() {
+    if (state.queue.isEmpty()) {
+        toast("Queue is empty");
+        return;
+    }
+
+    const c=state.queue.dequeue();
+    const wait=(Date.now() - c.arrivedAt) / 1000;
+    state.waitTimes.push(wait);
+    state.servedCount++;
+    state.revenue+=c.total;
+
+    logEvent("DEQ", `Token #$ {
+            c.token
+        }
+
+        — $ {
+            c.name
+        }
+
+        served · $ {
+            inr(c.total)
+        }
+
+        · waited $ {
+            wait.toFixed(1)
+        }
+
+        s`);
+    showReceipt(c);
+    renderQueue();
+    renderStats();
+}
+
+function peekFront() {
+    if (state.queue.isEmpty()) {
+        toast("Queue is empty");
+        return;
+    }
+
+    const c=state.queue.peek();
+
+    logEvent("PEEK", `Front: Token #$ {
+            c.token
+        }
+
+        — $ {
+            c.name
+        }
+
+        `);
+
+    toast(`Next: #$ {
+            c.token
+        }
+
+        $ {
+            c.name
+        }
+
+        `);
+}
+
+function resetSession() {
+    if ( !confirm("Reset the entire session? All queue & stats will be cleared.")) return;
+    state.queue=new Queue();
+
+    state.cart= {}
+
+    ;
+    state.tokenCounter=1001;
+    state.servedCount=0;
+    state.revenue=0;
+    state.waitTimes=[];
+    state.log=[];
+    $("custName").value="";
+    logEvent("INFO", "Session reset.");
+    renderCart();
+    renderQueue();
+    renderStats();
+}
+
+/* ========================================================= */
+/* QUEUE LANE RENDER                                           */
+/* ========================================================= */
+function renderQueue() {
+    const lane=$("queueLane");
+    const arr=state.queue.toArray();
+
+    if (arr.length===0) {
+        lane.innerHTML=`<div class="lane-empty">No one waiting. Add a customer to begin.</div>`;
+        $("serveBtn").disabled=true;
+        $("queueMeta").textContent="Empty · awaiting first customer";
+        return;
+    }
+
+    $("serveBtn").disabled=false;
+
+    const cards=arr.map((c, i)=> {
+            const isFront=i===0;
+
+            return ` <div class="qcard ${isFront ? 'front' : ''}" > <div class="badge" >$ {
+                isFront ? 'FRONT' : '#' + (i + 1)
+            }
+
+            </div> <div class="qcode" >TOKEN $ {
+                c.token
+            }
+
+            </div> <div class="qname" >$ {
+                c.name
+            }
+
+            </div> <div class="qitems" >$ {
+                c.items
+            }
+
+            item$ {
+                c.items > 1 ? 's' : ''
+            }
+
+            </div> <div class="qprice" >$ {
+                inr(c.total)
+            }
+
+            </div> </div> `;
+        });
+    // Add arrows between cards
+    const out=[];
+
+    cards.forEach((card, i)=> {
+            out.push(card);
+            if (i < cards.length - 1) out.push(`<div class="arrow" >→</div>`);
+        });
+    out.push(`<div class="arrow" title="REAR" >⬅ rear</div>`);
+    lane.innerHTML=out.join("");
+
+    $("queueMeta").textContent=`$ {
+        arr.length
+    }
+
+    customer$ {
+        arr.length>1 ? 's': ''
+    }
+
+    waiting · FIFO order`;
+}
+
+/* ========================================================= */
+/* STATS                                                       */
+/* ========================================================= */
+function renderStats() {
+    $("stat-queue").textContent=state.queue.size();
+    $("stat-served").textContent=state.servedCount;
+    $("stat-rev").textContent=state.revenue.toFixed(0);
+    const avg=state.waitTimes.length ? (state.waitTimes.reduce((a, b)=> a + b, 0) / state.waitTimes.length): 0;
+
+    $("stat-wait").innerHTML=`$ {
+        avg.toFixed(1)
+    }
+
+    <span class="unit">s</span>`;
+}
+
+/* ========================================================= */
+/* RECEIPT MODAL                                               */
+/* ========================================================= */
+function showReceipt(c) {
+    const rows=c.cart.map(line=> ` <tr> <td>$ {
+            line.name
+        }
+
+        </td> <td class="r" >$ {
+            line.qty
+        }
+
+        </td> <td class="r" >$ {
+            fmt(line.price)
+        }
+
+        </td> <td class="r" >$ {
+            fmt(line.price * line.qty)
+        }
+
+        </td> </tr> `).join("");
+
+    $("receipt").innerHTML=` <h3>Super Mart</h3><div class="rsub">— Tax Invoice · GST 5% —</div><div class="meta-row"><span>Token</span><span>#$ {
+        c.token
+    }
+
+    </span></div><div class="meta-row"><span>Customer</span><span>$ {
+        c.name
+    }
+
+    </span></div><div class="meta-row"><span>Date</span><span>$ {
+        new Date().toLocaleString('en-GB')
+    }
+
+    </span></div><hr/><table><tr><th>Item</th><th class="r">Qty</th><th class="r">Rate</th><th class="r">Amt</th></tr>$ {
+        rows
+    }
+
+    </table><hr/><div class="totals"><div class="row"><span>Subtotal</span><span>$ {
+        fmt(c.subtotal)
+    }
+
+    </span></div><div class="row"><span>GST @ 5%</span><span>$ {
+        fmt(c.tax)
+    }
+
+    </span></div><div class="row grand"><span>Total</span><span>₹$ {
+        fmt(c.total)
+    }
+
+    </span></div></div><div class="thx">Thank you for shopping with us !</div><div class="receipt-actions"><button class="btn ghost" onclick="window.print()">Print</button><button class="btn" onclick="closeModal()">Close</button></div>`;
+    $("modal").classList.add("show");
+}
+
+function closeModal() {
+    $("modal").classList.remove("show");
+}
+
+$("modal").addEventListener("click", e=> {
+        if (e.target.id==="modal") closeModal();
+    });
+
+/* ========================================================= */
+/* CLOCK                                                       */
+/* ========================================================= */
+function tickClock() {
+    const d=new Date();
+
+    $("clock").textContent=d.toLocaleString('en-GB', {
+        weekday: 'short', day: '2-digit', month: 'short',
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+    });
+}
+
+setInterval(tickClock, 1000);
+tickClock();
+
+/* ========================================================= */
+/* WIRE UP                                                     */
+/* ========================================================= */
+$("enqueueBtn").addEventListener("click", enqueueCustomer);
+$("serveBtn").addEventListener("click", serveNext);
+$("peekBtn").addEventListener("click", peekFront);
+$("resetBtn").addEventListener("click", resetSession);
+
+$("custName").addEventListener("keydown", e=> {
+        if (e.key==="Enter") enqueueCustomer();
+    });
+
+/* INIT */
+renderCatalogue();
+renderCart();
+renderQueue();
+renderStats();
+logEvent("INFO", "Super Mart POS terminal online.");
+</script></body></html>
